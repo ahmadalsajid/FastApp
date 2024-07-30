@@ -6,7 +6,6 @@ app = FastAPI()
 
 
 @app.get("/")
-
 async def homepage():
     return {"Hello": "World"}
 
