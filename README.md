@@ -1,4 +1,20 @@
 # FastApp
 
-This is a simple Python FastAPI application that will be used to demonstrate GitHub Actions for CI/CD, AWS ECR and ECS
-for image registry and deployment, and Terraform for IaC
+This is a simple Python FastAPI application that will be used to demonstrate 
+GitHub Actions for CI/CD, AWS ECR and ECS for image registry and deployment, 
+and Terraform for IaC.
+
+
+## Docker Compose  
+
+Spin up the application by 
+
+```
+docker compose up -d
+```
+
+Once done with testing, remove with 
+
+```
+docker compose down --rmi local
+```
