@@ -40,7 +40,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag fast-app:$(date +%s) --tag fast-app:0.0.1-dev
+        run: |
+          echo "build and release for ${{ secrets.ENVIRONMENT }} environment"
+          docker build . --file Dockerfile --tag fast-app:$(date +%s) --tag fast-app:0.0.1-dev
 
   prod_build:
     name: build docker image for prod release
@@ -53,4 +55,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag fast-app:$(date +%s) --tag fast-app:0.0.1 --tag fast-app:latest
+        run: |
+          echo "build and release for ${{ secrets.ENVIRONMENT }} environment"
+          docker build . --file Dockerfile --tag fast-app:$(date +%s) --tag fast-app:0.0.1 --tag fast-app:latest
