@@ -58,7 +58,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ahmadalsajid/fast-app:$IMAGE_TAG ahmadalsajid/fast-app:latest
+          tags: ahmadalsajid/fast-app:$IMAGE_TAG
 
 #       # Build docker to push to AWS ECS, will work on later
 #      - name: Build the Docker image
