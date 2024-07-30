@@ -54,11 +54,11 @@ jobs:
       - name: build and push docker image to docker registry
         uses: docker/build-push-action@v5
         env:
-          IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}-dev
+          IMAGE_TAG: "$git-tag"-dev
         with:
           context: .
           push: true
-          tags: ahmadalsajid/fast-app:$IMAGE_TAG
+          tags: fast-app:$IMAGE_TAG
 
 #       # Build docker to push to AWS ECS, will work on later
 #      - name: Build the Docker image
