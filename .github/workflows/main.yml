@@ -9,7 +9,7 @@ on:
 jobs:
 
   test:
-
+    name: Python unit test to check app
     runs-on: ubuntu-latest
 
     steps:
@@ -26,7 +26,8 @@ jobs:
         run: pytest
 
   build:
-
+    name: nuild docker image
+    needs: test
     runs-on: ubuntu-latest
 
     steps:
