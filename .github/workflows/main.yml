@@ -54,7 +54,7 @@ jobs:
       - name: build and push docker image to docker registry
         uses: docker/build-push-action@v5
         env:
-          IMAGE_TAG: "$git-tag"-dev
+          IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}-dev
         with:
           context: .
           push: true
