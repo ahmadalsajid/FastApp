@@ -2,9 +2,13 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+      - dev
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
+      - dev
 
 jobs:
 
@@ -25,12 +29,28 @@ jobs:
       - name: Test with Pytest
         run: pytest
 
-  build:
-    name: build docker image
+  dev_build:
+    name: build docker image for beta/dev release
+    if: github.event.ref == 'refs/heads/dev'
     needs: test
+    environment:
+      name: dev
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
       - name: Build the Docker image
-        run: docker build . --file Dockerfile --tag fast-app:$(date +%s)
+        run: docker build . --file Dockerfile --tag fast-app:$(date +%s) --tag fast-app:0.0.1-dev
+
+  prod_build:
+    name: build docker image for prod release
+    if: github.event.ref == 'refs/heads/main'
+    needs: test
+    environment:
+      name: prod
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the Docker image
+        run: docker build . --file Dockerfile --tag fast-app:$(date +%s) --tag fast-app:0.0.1 --tag fast-app:latest
