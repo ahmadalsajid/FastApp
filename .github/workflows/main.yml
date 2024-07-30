@@ -29,7 +29,7 @@ jobs:
       - name: Test with Pytest
         run: pytest
 
-  dev_build:
+  dev_build_dockerhub:
     name: build docker image for beta/dev release
     if: github.event.ref == 'refs/heads/dev'
     needs: test
@@ -38,11 +38,35 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Build the Docker image
-        run: |
-          echo "build and release for ${{ vars.ENVIRONMENT }} environment"
-          docker build . --file Dockerfile --tag fast-app:$(date +%s) --tag fast-app:0.0.1-dev
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: login to docker registry
+        uses: docker/login-action@v3
+        with:
+          username: ${{secrets.DOCKERHUB_USERNAME}}
+          password: ${{secrets.DOCKERHUB_TOKEN}}
+
+      - name: Automatic tagging of dev release
+        id: increment-git-tag
+        run:
+          bash ./tagging/dev_git_tagging.sh -v patch
+
+      - name: build and push docker image to docker registry
+        uses: docker/build-push-action@v5
+        env:
+          IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}-dev
+        with:
+          context: .
+          push: true
+          tags: ahmadalsajid/fast-app:$IMAGE_TAG ahmadalsajid/fast-app:latest
+
+#       # Build docker to push to AWS ECS, will work on later
+#      - name: Build the Docker image
+#        env:
+#          IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}-dev
+#        run: |
+#          echo "build and release for ${{ vars.ENVIRONMENT }} environment"
+#          docker build . --file Dockerfile --tag fast-app:$(date +%s) --tag fast-app:$IMAGE_TAG
 
   prod_build:
     name: build docker image for prod release
