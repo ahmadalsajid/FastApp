@@ -55,22 +55,6 @@ jobs:
         run:
           bash ./tagging/dev_git_tagging.sh -v patch
 
-#      # no need to create git tag for dev release
-#      - name: create GitHub tag for dev release
-#        uses: rickstaa/action-create-tag@v1
-#        id: "tag_create"
-#        with:
-#          tag: ${{ steps.increment-git-tag.outputs.git-tag }}
-#          tag_exists_error: false
-#          message: "release ${{ steps.increment-git-tag.outputs.git-tag }}"
-#
-#      # Print result using the env variable.
-#      - run: |
-#          echo "Tag already present: ${{ env.TAG_EXISTS }}"
-#      # Print result using the action output.
-#      - run: |
-#          echo "Tag already present: ${{ steps.tag_create.outputs.tag_exists }}"
-
       - name: build and push docker image to docker registry
         uses: docker/build-push-action@v5
         with:
@@ -127,9 +111,16 @@ jobs:
       - run: |
           echo "Tag already present: ${{ steps.tag_create.outputs.tag_exists }}"
 
-      - name: build and push docker image to docker registry
+      - name: build and push docker image to docker registry with incremental tag
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
           tags: ahmadalsajid/fast-app:${{ steps.increment-git-tag.outputs.git-tag }}
+
+      - name: build and push docker image to docker registry with `latest` tag
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ahmadalsajid/fast-app:latest
