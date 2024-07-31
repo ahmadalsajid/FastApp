@@ -55,6 +55,9 @@ jobs:
         run:
           bash ./tagging/dev_git_tagging.sh -v patch
 
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: build and push docker image to docker registry
         uses: docker/build-push-action@v6
         with:
