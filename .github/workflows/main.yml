@@ -56,9 +56,10 @@ jobs:
           bash ./tagging/dev_git_tagging.sh -v patch
 
       - name: build and push docker image to docker registry
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
           tags: ahmadalsajid/fast-app:${{ steps.increment-git-tag.outputs.git-tag }}-dev
 
@@ -112,15 +113,11 @@ jobs:
           echo "Tag already present: ${{ steps.tag_create.outputs.tag_exists }}"
 
       - name: build and push docker image to docker registry with incremental tag
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v6
         with:
           context: .
+          platforms: linux/amd64,linux/arm64
           push: true
-          tags: ahmadalsajid/fast-app:${{ steps.increment-git-tag.outputs.git-tag }}
-
-      - name: build and push docker image to docker registry with `latest` tag
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ahmadalsajid/fast-app:latest
+          tags: |
+            ahmadalsajid/fast-app:${{ steps.increment-git-tag.outputs.git-tag }}
+            ahmadalsajid/fast-app:latest
