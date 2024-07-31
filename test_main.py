@@ -27,7 +27,7 @@ def test_greetings_with_name_and_q():
     assert response.json() == {"Hello": "sajid", "q": "fail"}
 
 # #intended to fail
-# def test_greetings_with_name_and_q():
+# def test_greetings_with_name_and_q_fail():
 #     response = client.get("/greetings/sajid?q=fail")
 #     assert response.status_code == 200
 #     assert response.json() == {"Hello": "sajid", "q": None}
