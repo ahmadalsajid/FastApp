@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: CI/CD with Github actions, Docker Hub, and AWS ECS
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
           cd app/
           pytest
 
-  dev_build_dockerhub:
+  dev_build:
     name: build docker image for beta/dev release
     if: github.event.ref == 'refs/heads/dev'
     needs: test
@@ -66,15 +66,28 @@ jobs:
           context: ./app
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ahmadalsajid/fast-app:${{ steps.increment-git-tag.outputs.git-tag }}-dev
+          tags: |
+            ahmadalsajid/fast-app:${{ steps.increment-git-tag.outputs.git-tag }}-dev
+            ahmadalsajid/fast-app:dev
 
-  #       # Build docker to push to AWS ECS, will work on later
-  #      - name: Build the Docker image
-  #        env:
-  #          IMAGE_TAG: ${{ steps.increment-git-tag.outputs.git-tag }}-dev
-  #        run: |
-  #          echo "build and release for ${{ vars.ENVIRONMENT }} environment"
-  #          docker build . --file Dockerfile --tag fast-app:$(date +%s) --tag fast-app:$IMAGE_TAG
+
+  dev_deploy_ecs:
+    name: Deploy the latest image to dev ECS cluster
+    if: github.event.ref == 'refs/heads/dev'
+    needs: dev_build
+    environment:
+      name: dev
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: AWS CLI v2
+        uses: imehedi/actions-awscli-v2@latest
+        with:
+          args: ecs update-service --cluster ${{ vars.ECS_CLUSTER_NAME }} --service ${{ vars.ECS_SERVICE_NAME }} --force-new-deployment
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_SECRET_ACCESS_KEY }}
 
   prod_build:
     name: build docker image for prod release
@@ -129,3 +142,21 @@ jobs:
           tags: |
             ahmadalsajid/fast-app:${{ steps.increment-git-tag.outputs.git-tag }}
             ahmadalsajid/fast-app:latest
+
+  prod_deploy_ecs:
+    name: Deploy the latest image to prod ECS cluster
+    if: github.event.ref == 'refs/heads/main'
+    needs: prod_build
+    environment:
+      name: prod
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: AWS CLI v2
+        uses: imehedi/actions-awscli-v2@latest
+        with:
+          args: ecs update-service --cluster ${{ vars.ECS_CLUSTER_NAME }} --service ${{ vars.ECS_SERVICE_NAME }} --force-new-deployment
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ vars.AWS_SECRET_ACCESS_KEY }}

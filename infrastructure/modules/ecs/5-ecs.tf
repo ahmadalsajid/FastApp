@@ -27,6 +27,11 @@ resource "aws_ecs_task_definition" "app" {
     }
   )
 
+  runtime_platform {
+    operating_system_family = "LINUX"
+    cpu_architecture        = "ARM64"
+  }
+
   tags = {
     Name        = "${var.environment}-${var.cluster_name}-ecs-task-definition"
     ManagedBy   = "Terraform"

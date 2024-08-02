@@ -5,10 +5,6 @@
     "cpu": ${fargate_cpu},
     "memory": ${fargate_memory},
     "networkMode": "awsvpc",
-    "runtimePlatform": {
-        "cpuArchitecture": "ARM64",
-        "operatingSystemFamily": "LINUX"
-    },
     "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
@@ -23,6 +19,5 @@
         "hostPort": ${app_port}
       }
     ]
-  },
-
+  }
 ]
