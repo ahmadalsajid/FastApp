@@ -1,7 +1,7 @@
 variable "cluster_name" {
   description = "Cluster name to identify all resources"
   type        = string
-  default     = "FastApp"
+  default     = "Fast-App"
 }
 
 variable "aws_region" {
@@ -9,6 +9,7 @@ variable "aws_region" {
   type        = string
   default     = "us-east-1"
 }
+
 variable "environment" {
   description = "the environment we will be deploying for"
   type        = string
