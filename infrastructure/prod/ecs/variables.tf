@@ -11,7 +11,7 @@ variable "cluster_name" {
 variable "environment" {
   description = "the environment we will be deploying for"
   type        = string
-  default     = "dev"
+  default     = "prod"
 }
 
 variable "vpc_id" {
@@ -23,7 +23,7 @@ variable "vpc_id" {
 variable "app_image" {
   description = "Docker image to run in the ECS cluster"
   type        = string
-  default     = "ahmadalsajid/fast-app:dev"
+  default     = "ahmadalsajid/fast-app:latest"
 }
 
 variable "app_port" {

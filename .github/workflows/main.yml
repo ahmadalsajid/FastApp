@@ -55,7 +55,7 @@ jobs:
       - name: Automatic tagging of dev release
         id: increment-git-tag
         run:
-          bash ./tagging/dev_git_tagging.sh -v patch
+          bash ./tagging/git_tagging.sh -v patch
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -113,7 +113,7 @@ jobs:
       - name: Get incremental SemVer tag for prod release
         id: increment-git-tag
         run:
-          bash ./tagging/dev_git_tagging.sh -v patch
+          bash ./tagging/git_tagging.sh -v patch
 
       - name: create github tag for new release
         uses: rickstaa/action-create-tag@v1
