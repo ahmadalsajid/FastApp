@@ -1,14 +1,14 @@
-name: CI/CD with Github actions, Docker Hub, and AWS ECS
+name: Production
 
 on:
   push:
     branches:
       - main
-      - dev
+#      - dev
   pull_request:
     branches:
       - main
-      - dev
+#      - dev
 
 jobs:
 
@@ -31,65 +31,7 @@ jobs:
           cd app/
           pytest
 
-  dev_build:
-    name: build docker image for beta/dev release
-    if: github.event.ref == 'refs/heads/dev'
-    needs: test
-    environment:
-      name: dev
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Fetch tags
-        run: git fetch --prune --unshallow --tags
-
-      - name: login to docker registry
-        uses: docker/login-action@v3
-        with:
-          username: ${{vars.DOCKERHUB_USERNAME}}
-          password: ${{secrets.DOCKERHUB_TOKEN}}
-
-      - name: Automatic tagging of dev release
-        id: increment-git-tag
-        run:
-          bash ./tagging/git_tagging.sh -v patch
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: build and push docker image to docker registry
-        uses: docker/build-push-action@v6
-        with:
-          context: ./app
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: |
-            ahmadalsajid/fast-app:${{ steps.increment-git-tag.outputs.git-tag }}-dev
-            ahmadalsajid/fast-app:dev
-
-
-  dev_deploy_ecs:
-    name: Deploy the latest image to dev ECS cluster
-    if: github.event.ref == 'refs/heads/dev'
-    needs: dev_build
-    environment:
-      name: dev
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: AWS CLI v2
-        uses: imehedi/actions-awscli-v2@latest
-        with:
-          args: ecs update-service --cluster ${{ vars.ECS_CLUSTER_NAME }} --service ${{ vars.ECS_SERVICE_NAME }} --force-new-deployment
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          AWS_DEFAULT_REGION: ${{ vars.AWS_REGION }}
-
-  prod_build:
+  build:
     name: build docker image for prod release
     if: github.event.ref == 'refs/heads/main'
     needs: test
@@ -143,10 +85,10 @@ jobs:
             ahmadalsajid/fast-app:${{ steps.increment-git-tag.outputs.git-tag }}
             ahmadalsajid/fast-app:latest
 
-  prod_deploy_ecs:
+  deploy:
     name: Deploy the latest image to prod ECS cluster
     if: github.event.ref == 'refs/heads/main'
-    needs: prod_build
+    needs: build
     environment:
       name: prod
     runs-on: ubuntu-latest

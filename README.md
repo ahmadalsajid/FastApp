@@ -1,5 +1,11 @@
 # FastApp
 
+## Status
+
+![Development](https://github.com/ahmadalsajid/FastApp/actions/workflows/development.yml/badge.svg?branch=dev)
+![Production](https://github.com/ahmadalsajid/FastApp/actions/workflows/production.yml/badge.svg?branch=main)
+
+
 This is a simple Python FastAPI application that will be used to demonstrate
 GitHub Actions for CI/CD, Docker Hub to publish the image, AWS ECS for deployment,
 and Terraform for IaC.
@@ -159,17 +165,20 @@ terraform apply
 ## GitHub Actions
 
 Finally, we are at the end of our automation journey. We will create the CI/CD
-pipeline with GitHub Actions. Let's create an YAML file 
-[main.yml](.github/workflows/main.yml) where we are going to configure the 
-pipeline. The directory structure is 
+pipeline with GitHub Actions. Let's create two YAML files where we are going 
+to configure the pipelines for two different environments. The directory 
+structure is 
 
 ```
 .github
 └── workflows
-    └── main.yml
+    ├── development.yml
+    └── production.yml
 ```
 
 The workflow is self-explanatory. BTW, you will need to create two environment
 in your GitHub code repository's `settings` option, and set some variables 
 and secrets i.e., Docker Hub username and token, AWS Credentials and so on to 
-make this workflow work.
+make this workflow work. We have two almost identical YML files, for development
+and production environments respectively. We can have many more customizations
+based on the needs.
